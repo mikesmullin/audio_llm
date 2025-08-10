@@ -8,8 +8,10 @@ pipe = AudioLDM2Pipeline.from_pretrained(repo_id, torch_dtype=torch.float16)
 pipe = pipe.to("cuda")
 
 # define the prompts
-prompt = "The sound of a hammer hitting a wooden surface."
+prompt = "fantasy music"
+filename = "fantasy_music.wav"
 negative_prompt = "Low quality."
+rate = 44100
 
 # set the seed for generator
 generator = torch.Generator("cuda").manual_seed(0)
@@ -34,4 +36,4 @@ audio_data = np.clip(audio_data, -1.0, 1.0)
 audio_data = (audio_data * 32767).astype(np.int16)
 
 # save the best audio sample (index 0) as a .wav file
-wavfile.write("out/hammer.wav", rate=16000, data=audio_data)
+wavfile.write("out/" + filename, rate=rate, data=audio_data)
