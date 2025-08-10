@@ -8,8 +8,7 @@
       "name": "Debug gen.py",
       "type": "debugpy",
       "request": "launch",
-      // "program": "${file}",
-      "program": "gen.py",
+      "program": "${file}",
       "console": "integratedTerminal"
     }
   ]

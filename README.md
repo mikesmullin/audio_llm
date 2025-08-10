@@ -1,12 +1,12 @@
-# Music LLM
+# Audio LLM
 
-Trying to generate music .wav files locally.
+Generate SFX, VOX, and Music locally w/ your GPU.
 
-## Installation
+## Installation (on Windows 11)
 
 - install latest Python (w/ `py` installer)
 - install [CUDA](https://developer.nvidia.com/cuda-downloads?target_os=Windows&target_arch=x86_64&target_version=11&target_type=exe_local) Toolkit 13.0 (backward-compatible)
-- install PyTorch 2.8.0 for Windows Pip Python w/ CUDA 12.9
+- install PyTorch 2.8.0 for Windows pip Python w/ CUDA 12.9
   ```
   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu129
   ```
@@ -34,5 +34,10 @@ Trying to generate music .wav files locally.
 *NOTE*: On first run, this will auto-download the HuggingFace models.
 
 ```
-python gen.py
+python gen_sfx.py
 ```
+
+## Related Work
+
+- [github:facebookresearch/audiocraft](https://github.com/facebookresearch/audiocraft)
+- [huggingface:cvssp/audioldm2](https://huggingface.co/cvssp/audioldm2)
