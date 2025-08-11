@@ -2,8 +2,8 @@ from diffusers import AudioLDM2Pipeline
 import torch
 import numpy as np
 
-# repo_id = "cvssp/audioldm2"  # Text-to-audio 	350M 	1.1B 	1150k
-repo_id = "cvssp/audioldm2-large"  # Text-to-audio 	750M 	1.5B 	1150k
+repo_id = "cvssp/audioldm2"  # Text-to-audio 	350M 	1.1B 	1150k
+# repo_id = "cvssp/audioldm2-large"  # Text-to-audio 	750M 	1.5B 	1150k
 # repo_id = "cvssp/audioldm2-music"  # Text-to-music 	350M 	1.1B 	665k
 # repo_id = "cvssp/audioldm2-gigaspeech"  # Text-to-speech 	350M 	1.1B 	10k
 # repo_id = "cvssp/audioldm2-ljspeech"  # Text-to-speech 	350M 	1.1B 	10k
@@ -33,16 +33,35 @@ from datetime import datetime
 import scipy
 
 for i in range(30):
-    audio_length_seconds = 10.0  # np.random.uniform(1.0, 2.0)
+    audio_length_seconds = 5.0  # np.random.uniform(1.0, 2.0)
 
     # run the generation
     audio = pipe(
         prompt,
         negative_prompt=negative_prompt,
-        num_inference_steps=333,
+        num_inference_steps=200,
         audio_length_in_s=audio_length_seconds,
         num_waveforms_per_prompt=1,
     ).audios[0]
+
+    audio = audio.squeeze()
+    audio = np.clip(audio, -1.0, 1.0)
+    audio = (audio * 32767).astype(np.int16)
+
+    # Trim trailing silence from the end of the audio
+    def trim_trailing_silence(audio, threshold=500, min_silence_len=160):
+        # threshold: amplitude below which is considered silence (int16)
+        # min_silence_len: minimum number of samples to consider as silence
+        abs_audio = np.abs(audio)
+        # Find last index where audio is above threshold
+        non_silence = np.where(abs_audio > threshold)[0]
+        if len(non_silence) == 0:
+            return audio[:1]  # all silence, keep at least 1 sample
+        last_idx = non_silence[-1]
+        # Optionally, pad a little after the last sound
+        return audio[: last_idx + 1 + min_silence_len]
+
+    audio = trim_trailing_silence(audio)
 
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     out_path = f"out/sfx/{filename}_{ts}_{i+1}.wav"
