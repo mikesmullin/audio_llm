@@ -15,12 +15,17 @@ pipe = pipe.to("cuda")
 # - use adjectives to describe the sound (e.g. “high quality” or “clear”) and
 # - make the prompt context specific (e.g. “water stream in a forest” instead of “stream”).
 prompt = """
-player health pickup
+short retro-inspired sound effect for a player health pickup or powerup in a video game.
+Style: Bright, cheerful, and satisfying, with a clear upward pitch progression to indicate positivity.
+Tone & Timbre: Use chiptune-style synths or clean sine/square waves, with light harmonic overtones. Avoid harsh distortion.
+Intended Use: In-game pickup sound triggered when the player collects a health item or powerup.
 """
 filename = "health"
 # Using a negative prompt can significantly improve the quality of the generated waveform,
 # by guiding the generation away from terms that correspond to poor quality audio.
-negative_prompt = "Low quality."
+negative_prompt = """
+Constraints: No background noise, no voice samples, no percussion that could be mistaken for damage or error.
+"""
 # rate = 44100
 rate = 16000  # default for AudioLDM2
 
@@ -28,15 +33,15 @@ from datetime import datetime
 import scipy
 
 for i in range(30):
-    audio_length_seconds = np.random.uniform(0.10, 1.0)
+    audio_length_seconds = 10.0  # np.random.uniform(1.0, 2.0)
 
     # run the generation
     audio = pipe(
         prompt,
-        # negative_prompt=negative_prompt,
-        num_inference_steps=200,
+        negative_prompt=negative_prompt,
+        num_inference_steps=333,
         audio_length_in_s=audio_length_seconds,
-        # num_waveforms_per_prompt=1,
+        num_waveforms_per_prompt=1,
     ).audios[0]
 
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
